@@ -2,6 +2,20 @@ import Crawler
 import Parse
 from bs4 import BeautifulSoup
 import SQLConn
+import time
+
+def checkTime():
+    time_format = '%X'
+    t = time.strftime(time_format, time.localtime(time.time()))
+
+    arr_t = t.split(':')
+    int_t = int(arr_t[0])*3600 + int(arr_t[1])*60
+    int_start = 9*3600
+    int_stop = 24*3600
+    if(int_t > int_stop or int_t < int_start):
+        return False
+    else:
+        return True
 
 def Init(pr, sql):
     pr.sql = sql
@@ -29,10 +43,15 @@ sql = SQLConn.MysqlUti()
 
 Init(pr, sql)
 pr.testPaper('2488441')
+paperId = sql.getPaper()
 
-while((sql.getPaper()!=None) or (sql.getUser()!=None)):
-    paperId = sql.getPaper()
+
+while((paperId!=None) or (sql.getUser()!=None)):
     while paperId != None:
+        while(checkTime() == False):
+            print('sleeping... ')
+            time.sleep(1.5 * 3600)
+            
         print(paperId)
         try:
             processPaper(paperId)
@@ -40,7 +59,11 @@ while((sql.getPaper()!=None) or (sql.getUser()!=None)):
         except Exception:
             sql.insertErr('Paper Err', paperId, cr.lastPath)
             sql.updatePaper(paperId, -1)
-        paperId = sql.getPaper()
+            
+        try:
+            paperId = sql.getPaper()
+        except:
+            print('sql err')
 
     userId = sql.getUser()
     print('Process User' + userId)

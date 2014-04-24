@@ -3,15 +3,15 @@ import time
 
 class QASQL():
 
-#    user = 'root'
+    user = 'root'
 #    pwd = 'autoqa'
 #    host = '10.108.17.25'
-#    db = 'autoqa'
+    db = 'autoqa'
 
-    user = 'root'
+#    user = 'root'
     pwd = '30291912'
     host = 'localhost'
-    db = 'autoqa'
+#    db = 'autoqa'
     conn = mysql.connector.connect(user=user, password=pwd, host=host, database=db)
     cursor = conn.cursor()
 
@@ -165,11 +165,22 @@ class QASQL():
 class MysqlUti():
     
     user = 'root'
-    pwd = 'autoqa'
-    host = '10.108.17.25'
+#    pwd = 'autoqa'
+#    host = '10.108.17.25'
     db = 'ACM_Crawler'
-    conn = mysql.connector.connect(user=user, password=pwd, host=host, database=db)
-    cursor = conn.cursor()
+
+#    user = 'root'
+    pwd = '30291912'
+    host = 'localhost'
+#    db = 'ACM_Crawler'
+
+    
+    conn = None
+    cursor = None
+
+    def Connect(self):
+        self.conn = mysql.connector.connect(user=self.user, password=self.pwd, host=self.host, database=self.db)
+        self.cursor = self.conn.cursor()
 
     def Disconnect(self):
         self.conn.close()
@@ -180,96 +191,128 @@ class MysqlUti():
         return time.strftime(time_format, time.localtime(time.time()))
 
     def checkUser(self,id):
+        self.Connect()
         sel_sql = 'SELECT * FROM user WHERE Id=\'{}\''.format(id)
         try:
             self.cursor.execute(sel_sql)
         except:
+            print(sel_sql)
             print('user sel err')
         if(len(self.cursor.fetchall())>0):
+            self.Disconnect()
             return True
         else:
+            self.Disconnect()
             return False
 
     def checkPaper(self,id):
+        self.Connect()
         sel_sql = 'SELECT * FROM paper WHERE Id=\'{}\''.format(id)
         try:
             self.cursor.execute(sel_sql)
         except:
+            print(sel_sql)
             print('paper sel err')
         if(len(self.cursor.fetchall())>0):
+            self.Disconnect()
             return True
         else:
+            self.Disconnect()
             return False
 
     def getPaper(self):
-        sel_sql = 'SELECT Id FROM paper WHERE HasCrawled=0 LIMIT 0,1'
+        self.Connect()
+        sel_sql = 'SELECT Id FROM paper WHERE HasCrawled=0 LIMIT 0,1'     
         try:
             self.cursor.execute(sel_sql)
         except:
+            print(sel_sql)
             print('paper sel err')
         item = self.cursor.fetchall()
+        self.Disconnect()
         if(len(item) > 0):
             return item[0][0]
         else:
             return None
         
     def getUser(self):
+        self.Connect()
         sel_sql = 'SELECT Id FROM user WHERE HasCrawled=0 LIMIT 0,1'
         try:
             self.cursor.execute(sel_sql)
         except:
+            print(sel_sql)
             print('user sel err')
         item = self.cursor.fetchall()
+        self.Disconnect()
         if(len(item) > 0):
             return item[0][0]
         else:
             return None
 
     def insertPaper(self,id, hasCr):
+        self.Connect()
         insert_sql = 'INSERT INTO paper (Id, HasCrawled) VALUES (\'{}\', {})'.format(id, hasCr)
         try:
             self.cursor.execute(insert_sql)
             self.conn.commit()
         except:
+            print(insert_sql)
             print('peper insert err')
+        self.Disconnect()
 
     def updatePaper(self,id, hasCr):
+        self.Connect()
         update_sql = 'UPDATE paper SET HasCrawled={}, CrawlTime=\'{}\' WHERE Id=\'{}\''.format(hasCr, self.getTime(), id)
         try:
             self.cursor.execute(update_sql)
             self.conn.commit()
         except:
+            print(update_sql)
             print('peper update err')
+        self.Disconnect()
 
     def insertUser(self,id, hasCr):
+        self.Connect()
         insert_sql = 'INSERT INTO user (Id, HasCrawled) VALUES (\'{}\', {})'.format(id, hasCr)
         try:
             self.cursor.execute(insert_sql)
             self.conn.commit()
         except:
+            print(insert_sql)
             print('user insert err')
+        self.Disconnect()
 
     def updateUser(self,id, hasCr):
+        self.Connect()
         update_sql = 'UPDATE user SET HasCrawled={}, CrawlTime=\'{}\' WHERE Id=\'{}\''.format(hasCr, self.getTime(), id)
         try:
             self.cursor.execute(update_sql)
             self.conn.commit()
         except:
+            print(update_sql)
             print('user update err')
+        self.Disconnect()
 
     def insertErr(self,err_type, id, file_path):
+        self.Connect()
         insert_sql = 'INSERT INTO err (Id, type, file, ErrTime, HasProcess) VALUES (\'{}\', \'{}\', \'{}\', \'{}\', {})'.format(id, err_type, file_path, self.getTime(), 0)
         try:
             self.cursor.execute(insert_sql)
             self.conn.commit()
         except:
+            print(insert_sql)
             print('err insert err')
+        self.Disconnect()
 
     def updateErr(self,err_type, id, hasPr):
+        self.Connect()
         update_sql = 'UPDATE err SET HasProcess={} WHERE type=\'{}\' AND Id=\'{}\''.format(hasPr, err_type, id)
         try:
             self.cursor.execute(update_sql)
             self.conn.commit()
         except:
+            print(update_sql)
             print('err update err')
+        self.Disconnect()
 

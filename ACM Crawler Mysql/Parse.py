@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import re
+import SQLConn
 
 class Parse():
     userId = {}
@@ -11,14 +12,16 @@ class Parse():
     pubId = {}
     sql = None
 
-    def testUser(self, uid):
+    def testUser(self, uid):        
         if self.sql.checkUser(uid)==False:
             self.sql.insertUser(uid, 0)
+
 
 
     def testPaper(self, pid):
         if self.sql.checkPaper(pid)==False:
             self.sql.insertPaper(pid, 0)
+
     
     def getAuthor(self, soup):
         arr_authors = []
