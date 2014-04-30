@@ -23,8 +23,10 @@ def Init(pr, sql):
 
 def outPut_sql(paper):
     qa_sql = SQLConn.QASQL()
+    qa_sql.Connect()
     if(qa_sql.checkPaper(paper.id) == False):
         qa_sql.InsertPaper(paper)
+    qa_sql.Disconnect()
 
 def processPaper(paperId):
     content = cr.crawlPaperMain(paperId)
