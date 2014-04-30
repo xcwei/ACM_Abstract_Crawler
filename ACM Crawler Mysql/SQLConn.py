@@ -12,9 +12,13 @@ class QASQL():
     pwd = '30291912'
     host = 'localhost'
 #    db = 'autoqa'
-    conn = mysql.connector.connect(user=user, password=pwd, host=host, database=db)
-    cursor = conn.cursor()
+    conn = None
+    cursor = None
 
+    def Connect(self):
+        self.conn = mysql.connector.connect(user=self.user, password=self.pwd, host=self.host, database=self.db)
+        self.cursor = self.conn.cursor()
+        
     def Disconnect(self):
         self.conn.close()
         self.cursor.close()
