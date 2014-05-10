@@ -1,10 +1,18 @@
+# author: Xiaochi Wei
+# Email: wxchi@bit.edu.cn
+# Date: May 10, 2014
+
 import Crawler
 import Parse
 from bs4 import BeautifulSoup
 import SQLConn
 import time
+import datetime
 
 def checkTime():
+    if(datetime.datetime.now().weekday()>4):
+        return False
+    
     time_format = '%X'
     t = time.strftime(time_format, time.localtime(time.time()))
 
