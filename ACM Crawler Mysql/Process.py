@@ -1,17 +1,25 @@
+# author: Xiaochi Wei
+# Email: wxchi@bit.edu.cn
+# Date: May 10, 2014
+
 import Crawler
 import Parse
 from bs4 import BeautifulSoup
 import SQLConn
 import time
+import datetime
 
 def checkTime():
+    if(datetime.datetime.now().weekday()>4):
+        return False
+    
     time_format = '%X'
     t = time.strftime(time_format, time.localtime(time.time()))
 
     arr_t = t.split(':')
     int_t = int(arr_t[0])*3600 + int(arr_t[1])*60
     int_start = 9*3600
-    int_stop = 24*3600
+    int_stop = 17*3600
     if(int_t > int_stop or int_t < int_start):
         return False
     else:
@@ -23,8 +31,10 @@ def Init(pr, sql):
 
 def outPut_sql(paper):
     qa_sql = SQLConn.QASQL()
+    qa_sql.Connect()
     if(qa_sql.checkPaper(paper.id) == False):
         qa_sql.InsertPaper(paper)
+    qa_sql.Disconnect()
 
 def processPaper(paperId):
     content = cr.crawlPaperMain(paperId)
